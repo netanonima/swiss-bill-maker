@@ -1,0 +1,24 @@
+.layout-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin: 20px;
+}
+
+.formulaire-container {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+.pdf-viewer-container{
+  border-left: solid 2px red;
+  flex: 2;
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .layout-container {
+    justify-content: center;
+  }
+}

@@ -1,0 +1,76 @@
+<form (ngSubmit)="onSubmit()" [formGroup]="virementForm" class="form-container">
+  <mat-form-field appearance="fill">
+    <mat-label>Iban destinataire</mat-label>
+    <input matInput formControlName="ibanDestinataire" required>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Nom destinataire</mat-label>
+    <input matInput formControlName="nomDestinataire" required>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Rue destinataire</mat-label>
+    <input matInput formControlName="rueDestinataire" required>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>N° rue destinataire</mat-label>
+    <input matInput formControlName="numeroRueDestinataire" required>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Code postal destinataire</mat-label>
+    <input matInput formControlName="codePostalDestinataire" required type="number">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Localité destinataire</mat-label>
+    <input matInput formControlName="localiteDestinataire" required>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Numéro de référence</mat-label>
+    <input matInput formControlName="numeroReference" type="number">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Nom émetteur</mat-label>
+    <input matInput formControlName="nomEmetteur" required>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Rue émetteur</mat-label>
+    <input matInput formControlName="rueEmetteur" required>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>N° rue émetteur</mat-label>
+    <input matInput formControlName="numeroRueEmetteur" required>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Code postal émetteur</mat-label>
+    <input matInput formControlName="codePostalEmetteur" required type="number">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Localité émetteur</mat-label>
+    <input matInput formControlName="localiteEmetteur" required>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Monnaie</mat-label>
+    <mat-select formControlName="monnaie">
+      <mat-option value="CHF">CHF</mat-option>
+      <mat-option value="EUR">EUR</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Montant</mat-label>
+    <input matInput formControlName="montant" required type="number">
+  </mat-form-field>
+
+  <button mat-raised-button color="primary" type="submit" [disabled]="!virementForm.valid">Soumettre</button>
+</form>
