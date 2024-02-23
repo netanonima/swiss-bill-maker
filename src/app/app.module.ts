@@ -9,6 +9,7 @@ import {MatInputModule} from "@angular/material/input";
 import {ReactiveFormsModule} from "@angular/forms";
 import {MatSelectModule} from "@angular/material/select";
 import { SwissBillPdfViewerComponent } from './swiss-bill-pdf-viewer/swiss-bill-pdf-viewer.component';
+import {HttpClientModule} from "@angular/common/http";
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { SwissBillPdfViewerComponent } from './swiss-bill-pdf-viewer/swiss-bill-
     BrowserAnimationsModule,
     MatInputModule,
     ReactiveFormsModule,
-    MatSelectModule
+    MatSelectModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
