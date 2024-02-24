@@ -21,6 +21,15 @@ ng serve
 ## Limitations
 The app is not localized and only supports French for yet. 
 
+## Technologies
+- Angular 11
+- Node.js
+- Express.js
+- Angular Material
+- puppeteer
+- qrcode-svg
+- i18n-iso-countries
+
 ## Sources
 - [Six-group ig qr-bill v2.3](https://www.six-group.com/dam/download/banking-services/standardization/qr-bill/ig-qr-bill-v2.3-fr.pdf)
 - [Six-group introduction script invoice issuers recipients](https://www.six-group.com/dam/download/banking-services/standardization/qr-bill/introduction-script-invoice-issuers-recipients-fr.pdf)
