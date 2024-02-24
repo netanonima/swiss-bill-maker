@@ -1,27 +1,29 @@
 # SwissBillMaker
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.2.4.
+Just a simple app to generate Swiss bills according to six-group requirements. 
 
-## Development server
+## Usage
+install dependencies
+```bash
+npm install
+```
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Launch the backend (no database required)
+```bash
+node backend.js
+```
 
-## Code scaffolding
+Launch the frontend
+```bash
+ng serve
+```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Limitations
+The app is not localized and only supports French for yet. 
 
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## Sources
+- [Six-group ig qr-bill v2.3](https://www.six-group.com/dam/download/banking-services/standardization/qr-bill/ig-qr-bill-v2.3-fr.pdf)
+- [Six-group introduction script invoice issuers recipients](https://www.six-group.com/dam/download/banking-services/standardization/qr-bill/introduction-script-invoice-issuers-recipients-fr.pdf)
+- [BCGE style guide QR facture](https://www.bcge.ch/documents/509424/679187/BCGE_style_guide_QR_facture_en.pdf)
+- [Wikipedia - creditor reference (iso 11649)](https://en.wikipedia.org/wiki/Creditor_Reference)
+- [Creditor reference tester](https://kahur.ee/rfcalculator/)

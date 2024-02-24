@@ -62,7 +62,7 @@ export class SwissBillFormComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private swissBillApiRestService: SwissBillApiRestService, private swissBillDataSharingService: SwissBillDataSharingService) {
     this.virementForm = this.fb.group({
-      ibanDestinataire: ['CH9300762011623852957', [Validators.required, ibanValidator()]],
+      ibanDestinataire: ['CH1234567890123456789', [Validators.required, ibanValidator()]],
       nomDestinataire: ['Jean Dupont', [Validators.required, Validators.maxLength(70)]],
       rueDestinataire: ['Rue Exemple', [Validators.required, Validators.maxLength(70)]],
       numeroRueDestinataire: ['10', [Validators.required, Validators.maxLength(16)]],
