@@ -80,142 +80,152 @@ app.post('/generate-pdf', async (req, res) => {
   const svgString = qrcode.svg();
 
   const content = `
-    <body style="font-family: 'Arial', sans-serif;">
-        <div style="position: relative; width: 793.7px; height: 396.85px; border-top: dashed 1px black; border-left: solid 1px black; border-right: solid 1px black; border-bottom: solid 1px black; display: flex;">
-          <span style="position: absolute; top: -10px; left: 4%; transform: translateX(-50%); font-size: 14px;">&#x2702;</span>
-          <div style="position: relative; width: 196.53px; height: 359.05px; border-right: dashed 1px black; padding: 18.9px;">
-            <span style="position: absolute; top: 6%; right: -15px; transform: translate(-50%, -50%) rotate(90deg); font-size: 14px;">&#x2702;</span>
-              <!-- Zone du récépissé -->
-              <div style="width: 100%; height: 26.45px; font-size: 11pt;">
-                  <!-- Title section -->
-                  <strong>Récépissé</strong>
-              </div>
-              <div style="width: 100%; height: 211.65px;">
-                  <!-- Information section -->
-                  <p>
-                      <div style="font-size: 6pt; line-height: 9pt;"><strong>Compte / Payable à</strong></div>
-                      <div style="font-size: 8pt; line-height: 9pt;">
-                        <div>${req.body.ibanDestinataire}</div>
-                        <div>${req.body.nomDestinataire}</div>
-                        <div>${req.body.rueDestinataire} ${req.body.numeroRueDestinataire}</div>
-                        <div>${req.body.codePostalDestinataire} ${req.body.localiteDestinataire}</div>
+    <body style="font-family: 'Arial', sans-serif; height: 100%; margin: 0; display: grid; align-content: end;">
+        <div style="position: relative; left: 0px; top: -1px;">
+            <div style="position: relative; width: 793.7px; height: 396.85px; border-top: dashed 1px black; display: flex;">
+            <span style="position: absolute; top: -10px; left: 4%; transform: translateX(-50%); font-size: 14px;">&#x2702;</span>
+            <div style="position: relative; width: 196.53px; height: 359.05px; border-right: dashed 1px black; padding: 18.9px;">
+              <span style="position: absolute; top: 6%; right: -15px; transform: translate(-50%, -50%) rotate(90deg); font-size: 14px;">&#x2702;</span>
+                <!-- Zone du récépissé -->
+                <div style="width: 100%; height: 26.45px; font-size: 11pt;">
+                    <!-- Title section -->
+                    <strong>Récépissé</strong>
+                </div>
+                <div style="width: 100%; height: 211.65px;">
+                    <!-- Information section -->
+                    <p>
+                        <div style="font-size: 6pt; line-height: 9pt;"><strong>Compte / Payable à</strong></div>
+                        <div style="font-size: 8pt; line-height: 9pt;">
+                          <div>${req.body.ibanDestinataire}</div>
+                          <div>${req.body.nomDestinataire}</div>
+                          <div>${req.body.rueDestinataire} ${req.body.numeroRueDestinataire}</div>
+                          <div>${req.body.codePostalDestinataire} ${req.body.localiteDestinataire}</div>
+                        </div>
+                    </p>
+                    <p>
+                      <div style="font-size: 6pt; line-height: 9pt;"><strong>Référence</strong></div>
+                      <div style="font-size: 8pt; line-height: 9pt;">${req.body.numeroReference}</div>
+                    </p>
+                    <p>
+                        <div style="font-size: 6pt; line-height: 9pt;"><strong>Payable par</strong></div>
+                        <div style="font-size: 8pt; line-height: 9pt;">
+                          <div>${req.body.nomEmetteur}</div>
+                          <div>${req.body.rueEmetteur} ${req.body.numeroRueEmetteur}</div>
+                          <div>${req.body.codePostalEmetteur} ${req.body.localiteEmetteur}</div>
+                        </div>
+                    </p>
+                </div>
+                <div style="width: 100%; height: 52.91px; flex-direction: column;">
+                    <!-- Amount section -->
+                    <div style="display: flex;">
+                      <div style="width: 83.15px; height: 37.79px;">
+                          <div style="font-size: 6pt; line-height: 9pt;"><strong>Monnaie</strong></div>
+                          <div style="font-size: 8pt; line-height: 11pt;">${req.body.monnaie}</div>
                       </div>
-                  </p>
-                  <p>
-                    <div style="font-size: 6pt; line-height: 9pt;"><strong>Référence</strong></div>
-                    <div style="font-size: 8pt; line-height: 9pt;">${req.body.numeroReference}</div>
-                  </p>
-                  <p>
-                      <div style="font-size: 6pt; line-height: 9pt;"><strong>Payable par</strong></div>
-                      <div style="font-size: 8pt; line-height: 9pt;">
-                        <div>${req.body.nomEmetteur}</div>
-                        <div>${req.body.rueEmetteur} ${req.body.numeroRueEmetteur}</div>
-                        <div>${req.body.codePostalEmetteur} ${req.body.localiteEmetteur}</div>
+                      <div style="width: 113.38px; height: 37.79px">
+                          <div style="font-size: 6pt; line-height: 9pt;"><strong>Montant</strong></div>
+                          <div style="font-size: 8pt; line-height: 11pt;">${req.body.montant}</div>
                       </div>
-                  </p>
-              </div>
-              <div style="width: 100%; height: 52.91px; flex-direction: column;">
-                  <!-- Amount section -->
-                  <div style="display: flex;">
-                    <div style="width: 83.15px; height: 37.79px;">
-                        <div style="font-size: 6pt; line-height: 9pt;"><strong>Monnaie</strong></div>
-                        <div style="font-size: 8pt; line-height: 11pt;">${req.body.monnaie}</div>
                     </div>
-                    <div style="width: 113.38px; height: 37.79px">
-                        <div style="font-size: 6pt; line-height: 9pt;"><strong>Montant</strong></div>
-                        <div style="font-size: 8pt; line-height: 11pt;">${req.body.montant}</div>
-                    </div>
-                  </div>
-              </div>
-              <div style="width: 100%; height: 68.03px; text-align: right; font-size: 6pt; line-height: 8pt;">
-                  <!-- Acceptance point section -->
-                  <strong>Point de dépôt</strong>
-              </div>
-          </div>
-          <div style="width: 521.57px; height: 359.05px; padding: 18.9px;">
-            <!-- Zone de la section paiement -->
-            <div style="width: 521.56px; height: 321.26px; flex-direction: column;">
-                <div style="display: flex;">
-                    <div style="width: 192.75px; height: 321.24px;">
-                      <!-- left area -->
-                      <div style="width: 192.75px; height: 26.45px; font-size: 11pt">
-                          <!-- Title section -->
-                          <strong>Section paiement</strong>
-                      </div>
-                      <div style="width: 192.75px; height: 211.65px; padding-top: 18.9px; padding-right: 18.9px; padding-bottom: 18.9px;">
-                          <!-- Swiss QR Code section -->
-                          <div style="position: relative; width: 173.85px; height: 173.85px; position: relative; display: flex; justify-content: center; align-items: center;">
-                            <div style="width: 100%; height: auto;">
-                                ${svgString}
-                            </div>
-                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                                <svg width="7mm" height="7mm" version="1.1" id="Ebene_2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 19.8 19.8" style="enable-background:new 0 0 19.8 19.8;" xml:space="preserve">
-                                  <style type="text/css">
-                                   .st0{fill:#FFFFFF;}
-                                   .st1{fill:none;stroke:#FFFFFF;stroke-width:1.4357;stroke-miterlimit:10;}
-                                  </style>
-                                  <polygon points="18.3,0.7 1.6,0.7 0.7,0.7 0.7,1.6 0.7,18.3 0.7,19.1 1.6,19.1 18.3,19.1 19.1,19.1 19.1,18.3 19.1,1.6 19.1,0.7 "/>
-                                  <rect x="8.3" y="4" class="st0" width="3.3" height="11"/>
-                                  <rect x="4.4" y="7.9" class="st0" width="11" height="3.3"/>
-                                  <polygon class="st1" points="0.7,1.6 0.7,18.3 0.7,19.1 1.6,19.1 18.3,19.1 19.1,19.1 19.1,18.3 19.1,1.6 19.1,0.7 18.3,0.7 1.6,0.7 0.7,0.7 "/>
-                                </svg>
-                            </div>
-                          </div>
-                      </div>
-                      <div style="width: 192.75px; height: 83.14px; flex-direction: column;">
-                          <!-- Amount section -->
-                          <div style="display: flex;">
-                            <div style="width: 83.15px; height: 37.79px;">
-                                <div style="font-size: 8pt; line-height: 11pt;"><strong>Monnaie</strong></div>
-                                <div style="font-size: 10pt; line-height: 13pt;">${req.body.monnaie}</div>
-                            </div>
-                            <div style="width: 113.38px; height: 37.79px">
-                                <div style="font-size: 8pt; line-height: 11pt;"><strong>Montant</strong></div>
-                                <div style="font-size: 10pt; line-height: 13pt;">${req.body.montant}</div>
-                            </div>
-                          </div>
-                      </div>
-                  </div>
-                  <div style="width: 328.81px; height: 321.24px;">
-                      <!-- Information section -->
-                      <p>
-                          <div style="font-size: 8pt; line-height: 11pt;"><strong>Compte /Payable à</strong></div>
-                          <div style="font-size: 10pt; line-height: 11pt;">
-                            <div>${req.body.ibanDestinataire}</div>
-                            <div>${req.body.nomDestinataire}</div>
-                            <div>${req.body.rueDestinataire} ${req.body.numeroRueDestinataire}</div>
-                            <div>${req.body.codePostalDestinataire} ${req.body.localiteDestinataire}</div>
-                          </div>
-                      </p>
-                      <p>
-                        <div style="font-size: 8pt; line-height: 11pt;"><strong>Référence</strong></div>
-                        <div style="font-size: 10pt; line-height: 11pt;">${req.body.numeroReference}</div>
-                      </p>
-                      <p>
-                        <div style="font-size: 8pt; line-height: 11pt;"><strong>Informations supplémentaires</strong></div>
-                        <div style="font-size: 10pt; line-height: 11pt;">${req.body.additionalInformation}</div>
-                      </p>
-                      <p>
-                          <div style="font-size: 8pt; line-height: 11pt;"><strong>Payable par</strong></div>
-                          <div style="font-size: 10pt; line-height: 11pt;">
-                            <div>${req.body.nomEmetteur}</div>
-                            <div>${req.body.rueEmetteur} ${req.body.numeroRueEmetteur}</div>
-                            <div>${req.body.codePostalEmetteur} ${req.body.localiteEmetteur}</div>
-                          </div>
-                      </p>
-                  </div>
+                </div>
+                <div style="width: 100%; height: 68.03px; text-align: right; font-size: 6pt; line-height: 8pt;">
+                    <!-- Acceptance point section -->
+                    <strong>Point de dépôt</strong>
                 </div>
             </div>
-            <div style="width: 521.56px; height: 37.79px;">
-                <!-- Further information section -->
+            <div style="width: 521.57px; height: 359.05px; padding: 18.9px;">
+              <!-- Zone de la section paiement -->
+              <div style="width: 521.56px; height: 321.26px; flex-direction: column;">
+                  <div style="display: flex;">
+                      <div style="width: 192.75px; height: 321.24px;">
+                        <!-- left area -->
+                        <div style="width: 192.75px; height: 26.45px; font-size: 11pt">
+                            <!-- Title section -->
+                            <strong>Section paiement</strong>
+                        </div>
+                        <div style="width: 192.75px; height: 211.65px; padding-top: 18.9px; padding-right: 18.9px; padding-bottom: 18.9px;">
+                            <!-- Swiss QR Code section -->
+                            <div style="position: relative; width: 173.85px; height: 173.85px; position: relative; display: flex; justify-content: center; align-items: center;">
+                              <div style="width: 100%; height: auto;">
+                                  ${svgString}
+                              </div>
+                              <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                                  <svg width="7mm" height="7mm" version="1.1" id="Ebene_2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 19.8 19.8" style="enable-background:new 0 0 19.8 19.8;" xml:space="preserve">
+                                    <style type="text/css">
+                                     .st0{fill:#FFFFFF;}
+                                     .st1{fill:none;stroke:#FFFFFF;stroke-width:1.4357;stroke-miterlimit:10;}
+                                    </style>
+                                    <polygon points="18.3,0.7 1.6,0.7 0.7,0.7 0.7,1.6 0.7,18.3 0.7,19.1 1.6,19.1 18.3,19.1 19.1,19.1 19.1,18.3 19.1,1.6 19.1,0.7 "/>
+                                    <rect x="8.3" y="4" class="st0" width="3.3" height="11"/>
+                                    <rect x="4.4" y="7.9" class="st0" width="11" height="3.3"/>
+                                    <polygon class="st1" points="0.7,1.6 0.7,18.3 0.7,19.1 1.6,19.1 18.3,19.1 19.1,19.1 19.1,18.3 19.1,1.6 19.1,0.7 18.3,0.7 1.6,0.7 0.7,0.7 "/>
+                                  </svg>
+                              </div>
+                            </div>
+                        </div>
+                        <div style="width: 192.75px; height: 83.14px; flex-direction: column;">
+                            <!-- Amount section -->
+                            <div style="display: flex;">
+                              <div style="width: 83.15px; height: 37.79px;">
+                                  <div style="font-size: 8pt; line-height: 11pt;"><strong>Monnaie</strong></div>
+                                  <div style="font-size: 10pt; line-height: 13pt;">${req.body.monnaie}</div>
+                              </div>
+                              <div style="width: 113.38px; height: 37.79px">
+                                  <div style="font-size: 8pt; line-height: 11pt;"><strong>Montant</strong></div>
+                                  <div style="font-size: 10pt; line-height: 13pt;">${req.body.montant}</div>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="width: 328.81px; height: 321.24px;">
+                        <!-- Information section -->
+                        <p>
+                            <div style="font-size: 8pt; line-height: 11pt;"><strong>Compte /Payable à</strong></div>
+                            <div style="font-size: 10pt; line-height: 11pt;">
+                              <div>${req.body.ibanDestinataire}</div>
+                              <div>${req.body.nomDestinataire}</div>
+                              <div>${req.body.rueDestinataire} ${req.body.numeroRueDestinataire}</div>
+                              <div>${req.body.codePostalDestinataire} ${req.body.localiteDestinataire}</div>
+                            </div>
+                        </p>
+                        <p>
+                          <div style="font-size: 8pt; line-height: 11pt;"><strong>Référence</strong></div>
+                          <div style="font-size: 10pt; line-height: 11pt;">${req.body.numeroReference}</div>
+                        </p>
+                        <p>
+                          <div style="font-size: 8pt; line-height: 11pt;"><strong>Informations supplémentaires</strong></div>
+                          <div style="font-size: 10pt; line-height: 11pt;">${req.body.additionalInformation}</div>
+                        </p>
+                        <p>
+                            <div style="font-size: 8pt; line-height: 11pt;"><strong>Payable par</strong></div>
+                            <div style="font-size: 10pt; line-height: 11pt;">
+                              <div>${req.body.nomEmetteur}</div>
+                              <div>${req.body.rueEmetteur} ${req.body.numeroRueEmetteur}</div>
+                              <div>${req.body.codePostalEmetteur} ${req.body.localiteEmetteur}</div>
+                            </div>
+                        </p>
+                    </div>
+                  </div>
+              </div>
+              <div style="width: 521.56px; height: 37.79px;">
+                  <!-- Further information section -->
+              </div>
             </div>
-          </div>
-      </div>
+        </div>
+        </div>
     </body>
   `;
 
   await page.setContent(content);
-  const pdfBuffer = await page.pdf();
+  const pdfBuffer = await page.pdf({
+    format: 'A4',
+    margin: {
+      top: '0mm',
+      right: '0mm',
+      bottom: '0mm',
+      left: '0mm',
+    }
+  });
   await browser.close();
 
   res.setHeader('Content-Type', 'application/pdf');
