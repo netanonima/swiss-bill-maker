@@ -2,6 +2,12 @@ const express = require('express');
 const puppeteer = require('puppeteer');
 const cors = require('cors');
 const QRCodeSVG = require('qrcode-svg');
+var countries = require("i18n-iso-countries");
+
+countries.registerLocale(require("i18n-iso-countries/langs/en.json"));
+countries.registerLocale(require("i18n-iso-countries/langs/fr.json"));
+countries.registerLocale(require("i18n-iso-countries/langs/de.json"));
+countries.registerLocale(require("i18n-iso-countries/langs/it.json"));
 
 const app = express();
 const port = 3000;
@@ -9,9 +15,33 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 
+app.get('/getCountries', (req, res) => {
+  const language = req.query.lang || "en";
+  const priorityCountriesCodes = ['CH', 'LI', 'FR', 'DE', 'IT'];
+  let countryList = [];
+  const countryCodes = countries.getAlpha2Codes();
+
+  Object.keys(countryCodes).forEach(code => {
+    countryList.push({
+      code: code,
+      name: countries.getName(code, language),
+    });
+  });
+
+  const prioritizedCountries = countryList.filter(country => priorityCountriesCodes.includes(country.code));
+  prioritizedCountries.sort((a, b) => priorityCountriesCodes.indexOf(a.code) - priorityCountriesCodes.indexOf(b.code));
+
+  const otherCountries = countryList.filter(country => !priorityCountriesCodes.includes(country.code));
+  otherCountries.sort((a, b) => a.name.localeCompare(b.name));
+
+  const sortedCountryList = [...prioritizedCountries, ...otherCountries];
+
+  res.json(sortedCountryList);
+});
+
 app.post('/generate-pdf', async (req, res) => {
   console.log('Received request to generate PDF');
-  console.log(req.body);
+  // console.log(req.body);
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
@@ -23,25 +53,46 @@ app.post('/generate-pdf', async (req, res) => {
     numeroRueDestinataire: '10',
     codePostalDestinataire: 1000,
     localiteDestinataire: 'Lausanne',
+    paysDestinataire: 'CH',
     numeroReference: 123456789012345680000,
     nomEmetteur: 'Marie Curie',
     rueEmetteur: 'Rue de la Science',
     numeroRueEmetteur: '42',
     codePostalEmetteur: 1015,
     localiteEmetteur: 'Lausanne',
+    paysEmetteur: 'CH',
     monnaie: 'CHF',
     montant: 100.5,
     additionalInformation: 'Facture du 3 février 2024'
   }
   ${req.body.nomDestinataire}
   */
+
+  let ibanDestinataire = req.body.ibanDestinataire;
+  let nomDestinataire = req.body.nomDestinataire;
+  let rueDestinataire = req.body.rueDestinataire;
+  let numeroRueDestinataire = req.body.numeroRueDestinataire;
+  let codePostalDestinataire = req.body.codePostalDestinataire;
+  let localiteDestinataire = req.body.localiteDestinataire;
+  let paysDestinataire = req.body.paysDestinataire;
+  let numeroReference = req.body.numeroReference.toString();
+  let nomEmetteur = req.body.nomEmetteur;
+  let rueEmetteur = req.body.rueEmetteur;
+  let numeroRueEmetteur = req.body.numeroRueEmetteur;
+  let codePostalEmetteur = req.body.codePostalEmetteur;
+  let localiteEmetteur = req.body.localiteEmetteur;
+  let paysEmetteur = req.body.paysEmetteur;
+  let monnaie = req.body.monnaie;
+  let montant = req.body.montant;
+  let additionalInformation = req.body.additionalInformation;
+
   // traitement numéro de référence selon norme iso 11649
-  const numeroReference = req.body.numeroReference.toString();
-  const refForControlNumber = `${numeroReference}271500`;
+  const refForControlNumber = req.body.numeroReference+'271500';
   const bigIntRef = BigInt(refForControlNumber);
   let controlNumber = (98n - (bigIntRef % 97n)).toString();
   controlNumber = controlNumber.padStart(2, '0');
-  req.body.numeroReference = `RF${controlNumber}${numeroReference}`;
+  req.body.numeroReference = 'RF'+controlNumber+req.body.numeroReference;
+  numeroReference = req.body.numeroReference;
 
   // formatage iban
   const ibanSansEspaces = req.body.ibanDestinataire.replace(/\s+/g, '');
@@ -53,11 +104,42 @@ app.post('/generate-pdf', async (req, res) => {
   const referenceSegments = referenceSansEspaces.match(/.{1,5}/g);
   req.body.numeroReference = referenceSegments.join(' ');
 
-  // formatage montant
-  req.body.montant = req.body.montant.toFixed(2);
-
   // création du qr
-  let data = 'les données à encoder iciles données à encoder iciles données à encoder iciles données à encoder iciles données à encoder iciles données à encoder iciles données à encoder iciles données à encoder iciles données à encoder ici';
+  let data = `
+SPC
+0200
+1
+${ibanSansEspaces}
+S
+${nomDestinataire}
+${rueDestinataire}
+${numeroRueDestinataire}
+${codePostalDestinataire}
+${localiteDestinataire}
+${paysDestinataire}
+
+
+
+
+
+
+
+${montant}
+${monnaie}
+S
+${nomEmetteur}
+${rueEmetteur}
+${numeroRueEmetteur}
+${codePostalEmetteur}
+${localiteEmetteur}
+${paysEmetteur}
+SCOR
+${numeroReference}
+${additionalInformation}
+EPD
+
+
+  `;
   const numberOfLineBreaks = (data.match(/\n/g) || []).length;
   const maxDataLength = 997 - numberOfLineBreaks;
   if (data.length > maxDataLength) {
@@ -79,7 +161,7 @@ app.post('/generate-pdf', async (req, res) => {
   });
   const svgString = qrcode.svg();
 
-  const content = `
+  let content = `
     <body style="font-family: 'Arial', sans-serif; height: 100%; margin: 0; display: grid; align-content: end;">
         <div style="position: relative; left: 0px; top: -1px;">
             <div style="position: relative; width: 793.7px; height: 396.85px; border-top: dashed 1px black; display: flex;">
@@ -191,11 +273,15 @@ app.post('/generate-pdf', async (req, res) => {
                         <p>
                           <div style="font-size: 8pt; line-height: 11pt;"><strong>Référence</strong></div>
                           <div style="font-size: 10pt; line-height: 11pt;">${req.body.numeroReference}</div>
-                        </p>
+                        </p>`;
+  if(req.body.additionalInformation && req.body.additionalInformation !== ""){
+    content += `
                         <p>
                           <div style="font-size: 8pt; line-height: 11pt;"><strong>Informations supplémentaires</strong></div>
                           <div style="font-size: 10pt; line-height: 11pt;">${req.body.additionalInformation}</div>
-                        </p>
+                        </p>`;
+  }
+  content += `
                         <p>
                             <div style="font-size: 8pt; line-height: 11pt;"><strong>Payable par</strong></div>
                             <div style="font-size: 10pt; line-height: 11pt;">

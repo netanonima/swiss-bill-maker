@@ -1,7 +1,55 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { SwissBillApiRestService } from "../services/swiss-bill-api-rest.service";
 import { SwissBillDataSharingService } from "../services/swiss-bill-data-sharing.service";
+import { CountrySimplified} from "../models/country-simplified.model";
+
+function ibanValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (!value) {
+      return null; // laissez le validateur required gérer l'absence de valeur
+    }
+    const isValidIban = value.startsWith('CH') || value.startsWith('LI');
+    const hasCorrectLength = value.length === 21;
+    const noSpaces = !/\s/.test(value);
+    return isValidIban && hasCorrectLength && noSpaces ? null : { invalidIban: true };
+  };
+}
+
+function numericValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (value && !/^\d+$/.test(value)) {
+      return { nonNumeric: true };
+    }
+    return null;
+  };
+}
+
+function montantValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (value === null || value === '') {
+      return null;
+    }
+
+    if (!/^\d+(\.\d+)?$/.test(value)) {
+      return { invalidFormat: true };
+    }
+
+    const parts = value.toString().split('.');
+    if (parts.length === 2 && parts[1].length !== 2) {
+      return { incorrectDecimals: true };
+    }
+
+    if (/^0\d/.test(value)) {
+      return { leadingZero: true };
+    }
+
+    return null; // Valide
+  };
+}
 
 @Component({
   selector: 'app-swiss-bill-form',
@@ -10,28 +58,35 @@ import { SwissBillDataSharingService } from "../services/swiss-bill-data-sharing
 })
 export class SwissBillFormComponent implements OnInit {
   virementForm: FormGroup;
+  countryList: CountrySimplified[] = [];
 
   constructor(private fb: FormBuilder, private swissBillApiRestService: SwissBillApiRestService, private swissBillDataSharingService: SwissBillDataSharingService) {
     this.virementForm = this.fb.group({
-      ibanDestinataire: ['CH9300762011623852957'],
-      nomDestinataire: ['Jean Dupont'],
-      rueDestinataire: ['Rue Exemple'],
-      numeroRueDestinataire: ['10'],
-      codePostalDestinataire: [1000],
-      localiteDestinataire: ['Lausanne'],
-      numeroReference: [123456789012345678901],
-      nomEmetteur: ['Marie Curie'],
-      rueEmetteur: ['Rue de la Science'],
-      numeroRueEmetteur: ['42'],
-      codePostalEmetteur: [1015],
-      localiteEmetteur: ['Lausanne'],
-      monnaie: ['CHF'],
-      montant: [100.50],
-      additionalInformation: ['Facture du 3 février 2024']
+      ibanDestinataire: ['CH9300762011623852957', [Validators.required, ibanValidator()]],
+      nomDestinataire: ['Jean Dupont', [Validators.required, Validators.maxLength(70)]],
+      rueDestinataire: ['Rue Exemple', [Validators.required, Validators.maxLength(70)]],
+      numeroRueDestinataire: ['10', [Validators.required, Validators.maxLength(16)]],
+      codePostalDestinataire: [1000, [Validators.required, Validators.maxLength(16), numericValidator()]],
+      localiteDestinataire: ['Lausanne', [Validators.required, Validators.maxLength(35)]],
+      paysDestinataire: ['CH', Validators.required],
+      numeroReference: ['012345678901234567899', [Validators.minLength(5), Validators.maxLength(21), numericValidator()]],
+      nomEmetteur: ['Marie Curie', [Validators.required, Validators.maxLength(70)]],
+      rueEmetteur: ['Rue de la Science', [Validators.required, Validators.maxLength(70)]],
+      numeroRueEmetteur: ['42', [Validators.required, Validators.maxLength(16)]],
+      codePostalEmetteur: [1015, [Validators.required, Validators.maxLength(16), numericValidator()]],
+      localiteEmetteur: ['Lausanne', [Validators.required, Validators.maxLength(35)]],
+      paysEmetteur: ['CH', Validators.required],
+      monnaie: ['CHF', Validators.required],
+      montant: ['100.50', [Validators.required, montantValidator()]],
+      additionalInformation: ['', Validators.maxLength(140)]
     });
   }
 
   ngOnInit(): void {
+    this.swissBillApiRestService.getCountries('fr').subscribe(data => {
+      this.countryList = data;
+      console.log(this.countryList);
+    });
   }
 
   onSubmit() {

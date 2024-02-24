@@ -11,6 +11,10 @@ export class SwissBillApiRestService {
 
   constructor(private http: HttpClient) {}
 
+  getCountries(lang: string): Observable<any> {
+    return this.http.get('http://localhost:3000/getCountries', { params: { lang } });
+  }
+
   generatePdf(formData: SwissBillFormData): Observable<Blob> {
     return this.http.post('http://localhost:3000/generate-pdf', formData, { responseType: 'blob' });
   }

@@ -12,7 +12,6 @@
 }
 
 .pdf-viewer-container{
-  border-left: solid 2px red;
   flex: 2;
   overflow: hidden;
 }
