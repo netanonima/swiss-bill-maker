@@ -26,7 +26,8 @@ export class SwissBillFormComponent implements OnInit {
       codePostalEmetteur: [1015],
       localiteEmetteur: ['Lausanne'],
       monnaie: ['CHF'],
-      montant: [100.50]
+      montant: [100.50],
+      additionalInformation: ['Facture du 3 février 2024']
     });
   }
 

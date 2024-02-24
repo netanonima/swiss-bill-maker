@@ -72,5 +72,10 @@
     <input matInput formControlName="montant" required type="number">
   </mat-form-field>
 
+  <mat-form-field appearance="fill">
+    <mat-label>Information supplémentaire</mat-label>
+    <input matInput formControlName="additionalInformation" required>
+  </mat-form-field>
+
   <button mat-raised-button color="primary" type="submit" [disabled]="!virementForm.valid">Soumettre</button>
 </form>
