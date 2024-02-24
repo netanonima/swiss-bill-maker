@@ -62,22 +62,22 @@ export class SwissBillFormComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private swissBillApiRestService: SwissBillApiRestService, private swissBillDataSharingService: SwissBillDataSharingService) {
     this.virementForm = this.fb.group({
-      ibanDestinataire: ['CH1234567890123456789', [Validators.required, ibanValidator()]],
-      nomDestinataire: ['Jean Dupont', [Validators.required, Validators.maxLength(70)]],
-      rueDestinataire: ['Rue Exemple', [Validators.required, Validators.maxLength(70)]],
-      numeroRueDestinataire: ['10', [Validators.required, Validators.maxLength(16)]],
-      codePostalDestinataire: [1000, [Validators.required, Validators.maxLength(16), numericValidator()]],
-      localiteDestinataire: ['Lausanne', [Validators.required, Validators.maxLength(35)]],
+      ibanDestinataire: ['', [Validators.required, ibanValidator()]],
+      nomDestinataire: ['', [Validators.required, Validators.maxLength(70)]],
+      rueDestinataire: ['', [Validators.required, Validators.maxLength(70)]],
+      numeroRueDestinataire: ['', [Validators.required, Validators.maxLength(16)]],
+      codePostalDestinataire: ['', [Validators.required, Validators.maxLength(16), numericValidator()]],
+      localiteDestinataire: ['', [Validators.required, Validators.maxLength(35)]],
       paysDestinataire: ['CH', Validators.required],
-      numeroReference: ['012345678901234567899', [Validators.minLength(5), Validators.maxLength(21), numericValidator()]],
-      nomEmetteur: ['Marie Curie', [Validators.required, Validators.maxLength(70)]],
-      rueEmetteur: ['Rue de la Science', [Validators.required, Validators.maxLength(70)]],
-      numeroRueEmetteur: ['42', [Validators.required, Validators.maxLength(16)]],
-      codePostalEmetteur: [1015, [Validators.required, Validators.maxLength(16), numericValidator()]],
-      localiteEmetteur: ['Lausanne', [Validators.required, Validators.maxLength(35)]],
+      numeroReference: ['', [Validators.minLength(5), Validators.maxLength(21), numericValidator()]],
+      nomEmetteur: ['', [Validators.required, Validators.maxLength(70)]],
+      rueEmetteur: ['', [Validators.required, Validators.maxLength(70)]],
+      numeroRueEmetteur: ['', [Validators.required, Validators.maxLength(16)]],
+      codePostalEmetteur: ['', [Validators.required, Validators.maxLength(16), numericValidator()]],
+      localiteEmetteur: ['', [Validators.required, Validators.maxLength(35)]],
       paysEmetteur: ['CH', Validators.required],
       monnaie: ['CHF', Validators.required],
-      montant: ['100.50', [Validators.required, montantValidator()]],
+      montant: ['', [Validators.required, montantValidator()]],
       additionalInformation: ['', Validators.maxLength(140)]
     });
   }
