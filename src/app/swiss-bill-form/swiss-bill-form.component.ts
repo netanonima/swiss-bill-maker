@@ -59,6 +59,7 @@ function montantValidator(): ValidatorFn {
 export class SwissBillFormComponent implements OnInit {
   virementForm: FormGroup;
   countryList: CountrySimplified[] = [];
+  loading: boolean = false;
 
   constructor(private fb: FormBuilder, private swissBillApiRestService: SwissBillApiRestService, private swissBillDataSharingService: SwissBillDataSharingService) {
     this.virementForm = this.fb.group({
@@ -90,10 +91,12 @@ export class SwissBillFormComponent implements OnInit {
   }
 
   onSubmit() {
+    this.loading = true;
     if (this.virementForm.valid) {
       console.log(this.virementForm.value);
       this.swissBillApiRestService.generatePdf(this.virementForm.value).subscribe(pdfBlob => {
         this.swissBillDataSharingService.updatePdfData(pdfBlob);
+        this.loading = false;
       });
     } else {
       console.log('Le formulaire n\'est pas valide');

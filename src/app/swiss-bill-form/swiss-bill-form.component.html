@@ -1,153 +1,157 @@
-<form (ngSubmit)="onSubmit()" [formGroup]="virementForm" class="form-container">
-  <!-- Iban destinataire -->
-  <mat-form-field appearance="fill">
-    <mat-label>Iban destinataire</mat-label>
-    <input matInput formControlName="ibanDestinataire">
-    <mat-error *ngIf="virementForm.get('ibanDestinataire')?.hasError('required')">L'IBAN est obligatoire.</mat-error>
-    <mat-error *ngIf="virementForm.get('ibanDestinataire')?.hasError('invalidIban')">L'IBAN doit commencer par "CH" ou "LI", contenir exactement 21 caractères et ne pas inclure d'espaces.</mat-error>
-  </mat-form-field>
+<div class="whole-page">
+  <div class="spinner-area" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+  <form (ngSubmit)="onSubmit()" [formGroup]="virementForm" class="form-container">
+    <!-- Iban destinataire -->
+    <mat-form-field appearance="fill">
+      <mat-label>Iban destinataire</mat-label>
+      <input matInput formControlName="ibanDestinataire">
+      <mat-error *ngIf="virementForm.get('ibanDestinataire')?.hasError('required')">L'IBAN est obligatoire.</mat-error>
+      <mat-error *ngIf="virementForm.get('ibanDestinataire')?.hasError('invalidIban')">L'IBAN doit commencer par "CH" ou "LI", contenir exactement 21 caractères et ne pas inclure d'espaces.</mat-error>
+    </mat-form-field>
 
-  <!-- Nom destinataire -->
-  <mat-form-field appearance="fill">
-    <mat-label>Nom destinataire</mat-label>
-    <input matInput formControlName="nomDestinataire">
-    <mat-error *ngIf="virementForm.get('nomDestinataire')?.hasError('required')">Le nom du destinataire est obligatoire.</mat-error>
-    <mat-error *ngIf="virementForm.get('nomDestinataire')?.hasError('maxlength')">Le nom du destinataire ne peut pas dépasser 70 caractères.</mat-error>
-  </mat-form-field>
+    <!-- Nom destinataire -->
+    <mat-form-field appearance="fill">
+      <mat-label>Nom destinataire</mat-label>
+      <input matInput formControlName="nomDestinataire">
+      <mat-error *ngIf="virementForm.get('nomDestinataire')?.hasError('required')">Le nom du destinataire est obligatoire.</mat-error>
+      <mat-error *ngIf="virementForm.get('nomDestinataire')?.hasError('maxlength')">Le nom du destinataire ne peut pas dépasser 70 caractères.</mat-error>
+    </mat-form-field>
 
-  <!-- Rue destinataire -->
-  <mat-form-field appearance="fill">
-    <mat-label>Rue destinataire</mat-label>
-    <input matInput formControlName="rueDestinataire">
-    <mat-error *ngIf="virementForm.get('rueDestinataire')?.hasError('required')">La rue est obligatoire.</mat-error>
-    <mat-error *ngIf="virementForm.get('rueDestinataire')?.hasError('maxlength')">La rue ne peut pas dépasser 70 caractères.</mat-error>
-  </mat-form-field>
+    <!-- Rue destinataire -->
+    <mat-form-field appearance="fill">
+      <mat-label>Rue destinataire</mat-label>
+      <input matInput formControlName="rueDestinataire">
+      <mat-error *ngIf="virementForm.get('rueDestinataire')?.hasError('required')">La rue est obligatoire.</mat-error>
+      <mat-error *ngIf="virementForm.get('rueDestinataire')?.hasError('maxlength')">La rue ne peut pas dépasser 70 caractères.</mat-error>
+    </mat-form-field>
 
-  <!-- N° rue destinataire -->
-  <mat-form-field appearance="fill">
-    <mat-label>N° rue destinataire</mat-label>
-    <input matInput formControlName="numeroRueDestinataire">
-    <mat-error *ngIf="virementForm.get('numeroRueDestinataire')?.hasError('required')">Le numéro de rue est obligatoire.</mat-error>
-    <mat-error *ngIf="virementForm.get('numeroRueDestinataire')?.hasError('maxlength')">Le numéro de rue ne peut pas dépasser 16 caractères.</mat-error>
-  </mat-form-field>
+    <!-- N° rue destinataire -->
+    <mat-form-field appearance="fill">
+      <mat-label>N° rue destinataire</mat-label>
+      <input matInput formControlName="numeroRueDestinataire">
+      <mat-error *ngIf="virementForm.get('numeroRueDestinataire')?.hasError('required')">Le numéro de rue est obligatoire.</mat-error>
+      <mat-error *ngIf="virementForm.get('numeroRueDestinataire')?.hasError('maxlength')">Le numéro de rue ne peut pas dépasser 16 caractères.</mat-error>
+    </mat-form-field>
 
-  <!-- Code postal destinataire -->
-  <mat-form-field appearance="fill">
-    <mat-label>Code postal destinataire</mat-label>
-    <input matInput formControlName="codePostalDestinataire">
-    <mat-error *ngIf="virementForm.get('codePostalDestinataire')?.hasError('required')">Le code postal est obligatoire.</mat-error>
-    <mat-error *ngIf="virementForm.get('codePostalDestinataire')?.hasError('maxlength')">Le code postal ne peut pas dépasser 16 caractères.</mat-error>
-    <mat-error *ngIf="virementForm.get('codePostalDestinataire')?.hasError('nonNumeric')">Le code postal doit être numérique.</mat-error>
-  </mat-form-field>
+    <!-- Code postal destinataire -->
+    <mat-form-field appearance="fill">
+      <mat-label>Code postal destinataire</mat-label>
+      <input matInput formControlName="codePostalDestinataire">
+      <mat-error *ngIf="virementForm.get('codePostalDestinataire')?.hasError('required')">Le code postal est obligatoire.</mat-error>
+      <mat-error *ngIf="virementForm.get('codePostalDestinataire')?.hasError('maxlength')">Le code postal ne peut pas dépasser 16 caractères.</mat-error>
+      <mat-error *ngIf="virementForm.get('codePostalDestinataire')?.hasError('nonNumeric')">Le code postal doit être numérique.</mat-error>
+    </mat-form-field>
 
-  <!-- Localité destinataire -->
-  <mat-form-field appearance="fill">
-    <mat-label>Localité destinataire</mat-label>
-    <input matInput formControlName="localiteDestinataire">
-    <mat-error *ngIf="virementForm.get('localiteDestinataire')?.hasError('required')">La localité est obligatoire.</mat-error>
-    <mat-error *ngIf="virementForm.get('localiteDestinataire')?.hasError('maxlength')">La localité ne peut pas dépasser 35 caractères.</mat-error>
-  </mat-form-field>
+    <!-- Localité destinataire -->
+    <mat-form-field appearance="fill">
+      <mat-label>Localité destinataire</mat-label>
+      <input matInput formControlName="localiteDestinataire">
+      <mat-error *ngIf="virementForm.get('localiteDestinataire')?.hasError('required')">La localité est obligatoire.</mat-error>
+      <mat-error *ngIf="virementForm.get('localiteDestinataire')?.hasError('maxlength')">La localité ne peut pas dépasser 35 caractères.</mat-error>
+    </mat-form-field>
 
-  <!-- Pays destinataire -->
-  <mat-form-field appearance="fill">
-    <mat-label>Pays destinataire</mat-label>
-    <mat-select formControlName="paysDestinataire">
-      <mat-option *ngFor="let country of countryList" [value]="country.code">
-        {{ country.name }}
-      </mat-option>
-    </mat-select>
-    <mat-error *ngIf="virementForm.get('paysDestinataire')?.hasError('required')">Le pays est obligatoire.</mat-error>
-  </mat-form-field>
+    <!-- Pays destinataire -->
+    <mat-form-field appearance="fill">
+      <mat-label>Pays destinataire</mat-label>
+      <mat-select formControlName="paysDestinataire">
+        <mat-option *ngFor="let country of countryList" [value]="country.code">
+          {{ country.name }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="virementForm.get('paysDestinataire')?.hasError('required')">Le pays est obligatoire.</mat-error>
+    </mat-form-field>
 
-  <!-- Numéro de référence -->
-  <mat-form-field appearance="fill">
-    <mat-label>Numéro de référence</mat-label>
-    <input matInput formControlName="numeroReference">
-    <mat-error *ngIf="virementForm.get('numeroReference')?.hasError('maxlength')">Le numéro de référence ne peut pas dépasser 21 caractères.</mat-error>
-    <mat-error *ngIf="virementForm.get('numeroReference')?.hasError('nonNumeric')">Le numéro de référence doit être numérique.</mat-error>
-  </mat-form-field>
+    <!-- Numéro de référence -->
+    <mat-form-field appearance="fill">
+      <mat-label>Numéro de référence</mat-label>
+      <input matInput formControlName="numeroReference">
+      <mat-error *ngIf="virementForm.get('numeroReference')?.hasError('maxlength')">Le numéro de référence ne peut pas dépasser 21 caractères.</mat-error>
+      <mat-error *ngIf="virementForm.get('numeroReference')?.hasError('nonNumeric')">Le numéro de référence doit être numérique.</mat-error>
+    </mat-form-field>
 
-  <!-- Nom émetteur -->
-  <mat-form-field appearance="fill">
-    <mat-label>Nom émetteur</mat-label>
-    <input matInput formControlName="nomEmetteur">
-    <mat-error *ngIf="virementForm.get('nomEmetteur')?.hasError('required')">Le nom de l'émetteur est obligatoire.</mat-error>
-    <mat-error *ngIf="virementForm.get('nomEmetteur')?.hasError('maxlength')">Le nom de l'émetteur ne peut pas dépasser 70 caractères.</mat-error>
-  </mat-form-field>
+    <!-- Nom émetteur -->
+    <mat-form-field appearance="fill">
+      <mat-label>Nom émetteur</mat-label>
+      <input matInput formControlName="nomEmetteur">
+      <mat-error *ngIf="virementForm.get('nomEmetteur')?.hasError('required')">Le nom de l'émetteur est obligatoire.</mat-error>
+      <mat-error *ngIf="virementForm.get('nomEmetteur')?.hasError('maxlength')">Le nom de l'émetteur ne peut pas dépasser 70 caractères.</mat-error>
+    </mat-form-field>
 
-  <!-- Rue émetteur -->
-  <mat-form-field appearance="fill">
-    <mat-label>Rue émetteur</mat-label>
-    <input matInput formControlName="rueEmetteur">
-    <mat-error *ngIf="virementForm.get('rueEmetteur')?.hasError('required')">La rue de l'émetteur est obligatoire.</mat-error>
-    <mat-error *ngIf="virementForm.get('rueEmetteur')?.hasError('maxlength')">La rue de l'émetteur ne peut pas dépasser 70 caractères.</mat-error>
-  </mat-form-field>
+    <!-- Rue émetteur -->
+    <mat-form-field appearance="fill">
+      <mat-label>Rue émetteur</mat-label>
+      <input matInput formControlName="rueEmetteur">
+      <mat-error *ngIf="virementForm.get('rueEmetteur')?.hasError('required')">La rue de l'émetteur est obligatoire.</mat-error>
+      <mat-error *ngIf="virementForm.get('rueEmetteur')?.hasError('maxlength')">La rue de l'émetteur ne peut pas dépasser 70 caractères.</mat-error>
+    </mat-form-field>
 
-  <!-- N° rue émetteur -->
-  <mat-form-field appearance="fill">
-    <mat-label>N° rue émetteur</mat-label>
-    <input matInput formControlName="numeroRueEmetteur">
-    <mat-error *ngIf="virementForm.get('numeroRueEmetteur')?.hasError('required')">Le numéro de rue de l'émetteur est obligatoire.</mat-error>
-    <mat-error *ngIf="virementForm.get('numeroRueEmetteur')?.hasError('maxlength')">Le numéro de rue de l'émetteur ne peut pas dépasser 16 caractères.</mat-error>
-  </mat-form-field>
+    <!-- N° rue émetteur -->
+    <mat-form-field appearance="fill">
+      <mat-label>N° rue émetteur</mat-label>
+      <input matInput formControlName="numeroRueEmetteur">
+      <mat-error *ngIf="virementForm.get('numeroRueEmetteur')?.hasError('required')">Le numéro de rue de l'émetteur est obligatoire.</mat-error>
+      <mat-error *ngIf="virementForm.get('numeroRueEmetteur')?.hasError('maxlength')">Le numéro de rue de l'émetteur ne peut pas dépasser 16 caractères.</mat-error>
+    </mat-form-field>
 
-  <!-- Code postal émetteur -->
-  <mat-form-field appearance="fill">
-    <mat-label>Code postal émetteur</mat-label>
-    <input matInput formControlName="codePostalEmetteur">
-    <mat-error *ngIf="virementForm.get('codePostalEmetteur')?.hasError('required')">Le code postal de l'émetteur est obligatoire.</mat-error>
-    <mat-error *ngIf="virementForm.get('codePostalEmetteur')?.hasError('maxlength')">Le code postal de l'émetteur ne peut pas dépasser 16 caractères.</mat-error>
-    <mat-error *ngIf="virementForm.get('codePostalEmetteur')?.hasError('nonNumeric')">Le code postal de l'émetteur doit être numérique.</mat-error>
-  </mat-form-field>
+    <!-- Code postal émetteur -->
+    <mat-form-field appearance="fill">
+      <mat-label>Code postal émetteur</mat-label>
+      <input matInput formControlName="codePostalEmetteur">
+      <mat-error *ngIf="virementForm.get('codePostalEmetteur')?.hasError('required')">Le code postal de l'émetteur est obligatoire.</mat-error>
+      <mat-error *ngIf="virementForm.get('codePostalEmetteur')?.hasError('maxlength')">Le code postal de l'émetteur ne peut pas dépasser 16 caractères.</mat-error>
+      <mat-error *ngIf="virementForm.get('codePostalEmetteur')?.hasError('nonNumeric')">Le code postal de l'émetteur doit être numérique.</mat-error>
+    </mat-form-field>
 
-  <!-- Localité émetteur -->
-  <mat-form-field appearance="fill">
-    <mat-label>Localité émetteur</mat-label>
-    <input matInput formControlName="localiteEmetteur">
-    <mat-error *ngIf="virementForm.get('localiteEmetteur')?.hasError('required')">La localité de l'émetteur est obligatoire.</mat-error>
-    <mat-error *ngIf="virementForm.get('localiteEmetteur')?.hasError('maxlength')">La localité de l'émetteur ne peut pas dépasser 35 caractères.</mat-error>
-  </mat-form-field>
+    <!-- Localité émetteur -->
+    <mat-form-field appearance="fill">
+      <mat-label>Localité émetteur</mat-label>
+      <input matInput formControlName="localiteEmetteur">
+      <mat-error *ngIf="virementForm.get('localiteEmetteur')?.hasError('required')">La localité de l'émetteur est obligatoire.</mat-error>
+      <mat-error *ngIf="virementForm.get('localiteEmetteur')?.hasError('maxlength')">La localité de l'émetteur ne peut pas dépasser 35 caractères.</mat-error>
+    </mat-form-field>
 
-  <!-- Pays émetteur -->
-  <mat-form-field appearance="fill">
-    <mat-label>Pays émetteur</mat-label>
-    <mat-select formControlName="paysEmetteur">
-      <mat-option *ngFor="let country of countryList" [value]="country.code">
-        {{ country.name }}
-      </mat-option>
-    </mat-select>
-    <mat-error *ngIf="virementForm.get('paysEmetteur')?.hasError('required')">Le pays de l'émetteur est obligatoire.</mat-error>
-  </mat-form-field>
+    <!-- Pays émetteur -->
+    <mat-form-field appearance="fill">
+      <mat-label>Pays émetteur</mat-label>
+      <mat-select formControlName="paysEmetteur">
+        <mat-option *ngFor="let country of countryList" [value]="country.code">
+          {{ country.name }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="virementForm.get('paysEmetteur')?.hasError('required')">Le pays de l'émetteur est obligatoire.</mat-error>
+    </mat-form-field>
 
-  <!-- Monnaie -->
-  <mat-form-field appearance="fill">
-    <mat-label>Monnaie</mat-label>
-    <mat-select formControlName="monnaie">
-      <mat-option value="CHF">CHF</mat-option>
-      <mat-option value="EUR">EUR</mat-option>
-    </mat-select>
-    <mat-error *ngIf="virementForm.get('monnaie')?.hasError('required')">La monnaie est obligatoire.</mat-error>
-  </mat-form-field>
+    <!-- Monnaie -->
+    <mat-form-field appearance="fill">
+      <mat-label>Monnaie</mat-label>
+      <mat-select formControlName="monnaie">
+        <mat-option value="CHF">CHF</mat-option>
+        <mat-option value="EUR">EUR</mat-option>
+      </mat-select>
+      <mat-error *ngIf="virementForm.get('monnaie')?.hasError('required')">La monnaie est obligatoire.</mat-error>
+    </mat-form-field>
 
-  <!-- Montant -->
-  <mat-form-field appearance="fill">
-    <mat-label>Montant</mat-label>
-    <input matInput formControlName="montant" type="text">
-    <mat-error *ngIf="virementForm.get('montant')?.hasError('required')">Le montant est obligatoire.</mat-error>
-    <mat-error *ngIf="virementForm.get('montant')?.hasError('invalidFormat')">Le format du montant est invalide.</mat-error>
-    <mat-error *ngIf="virementForm.get('montant')?.hasError('incorrectDecimals')">Le montant doit avoir exactement 2 décimales.</mat-error>
-    <mat-error *ngIf="virementForm.get('montant')?.hasError('leadingZero')">Le montant ne doit pas commencer par un zéro non significatif.</mat-error>
-    <mat-error *ngIf="virementForm.get('montant')?.hasError('incorrectSeparator')">Le séparateur décimal doit être un point.</mat-error>
-  </mat-form-field>
+    <!-- Montant -->
+    <mat-form-field appearance="fill">
+      <mat-label>Montant</mat-label>
+      <input matInput formControlName="montant" type="text">
+      <mat-error *ngIf="virementForm.get('montant')?.hasError('required')">Le montant est obligatoire.</mat-error>
+      <mat-error *ngIf="virementForm.get('montant')?.hasError('invalidFormat')">Le format du montant est invalide.</mat-error>
+      <mat-error *ngIf="virementForm.get('montant')?.hasError('incorrectDecimals')">Le montant doit avoir exactement 2 décimales.</mat-error>
+      <mat-error *ngIf="virementForm.get('montant')?.hasError('leadingZero')">Le montant ne doit pas commencer par un zéro non significatif.</mat-error>
+      <mat-error *ngIf="virementForm.get('montant')?.hasError('incorrectSeparator')">Le séparateur décimal doit être un point.</mat-error>
+    </mat-form-field>
 
 
-  <!-- Information supplémentaire -->
-  <mat-form-field appearance="fill">
-    <mat-label>Information supplémentaire</mat-label>
-    <input matInput formControlName="additionalInformation">
-    <mat-error *ngIf="virementForm.get('additionalInformation')?.hasError('maxlength')">L'information supplémentaire ne peut pas dépasser 140 caractères.</mat-error>
-  </mat-form-field>
+    <!-- Information supplémentaire -->
+    <mat-form-field appearance="fill">
+      <mat-label>Information supplémentaire</mat-label>
+      <input matInput formControlName="additionalInformation">
+      <mat-error *ngIf="virementForm.get('additionalInformation')?.hasError('maxlength')">L'information supplémentaire ne peut pas dépasser 140 caractères.</mat-error>
+    </mat-form-field>
 
-  <button mat-raised-button color="primary" type="submit" [disabled]="!virementForm.valid">Soumettre</button>
-</form>
-
+    <button mat-raised-button color="primary" type="submit" [disabled]="!virementForm.valid || loading">Soumettre</button>
+  </form>
+</div>
