@@ -69,7 +69,7 @@ export class SwissBillFormComponent implements OnInit {
       numeroRueDestinataire: ['', [Validators.required, Validators.maxLength(16)]],
       codePostalDestinataire: ['', [Validators.required, Validators.maxLength(16), numericValidator()]],
       localiteDestinataire: ['', [Validators.required, Validators.maxLength(35)]],
-      paysDestinataire: ['', Validators.required],
+      paysDestinataire: ['CH', Validators.required],
       numeroReferenceType: ['', Validators.required],
       numeroReference: ['', [Validators.minLength(5), Validators.maxLength(21), numericValidator()]],
       nomEmetteur: ['', [Validators.required, Validators.maxLength(70)]],
@@ -77,23 +77,35 @@ export class SwissBillFormComponent implements OnInit {
       numeroRueEmetteur: ['', [Validators.required, Validators.maxLength(16)]],
       codePostalEmetteur: ['', [Validators.required, Validators.maxLength(16), numericValidator()]],
       localiteEmetteur: ['', [Validators.required, Validators.maxLength(35)]],
-      paysEmetteur: ['', Validators.required],
-      monnaie: ['', Validators.required],
+      paysEmetteur: ['CH', Validators.required],
+      monnaie: ['CHF', Validators.required],
       montant: ['', [Validators.required, montantValidator()]],
       additionalInformation: ['', Validators.maxLength(140)]
     });
   }
 
   ngOnInit(): void {
+    this.loadFormData();
     this.swissBillApiRestService.getCountries('fr').subscribe(data => {
       this.countryList = data;
-      console.log(this.countryList);
     });
+  }
+
+  loadFormData() {
+    const savedForm = localStorage.getItem('virementFormData');
+    if (savedForm) {
+      this.virementForm.setValue(JSON.parse(savedForm));
+    }
+  }
+
+  saveFormData() {
+    localStorage.setItem('virementFormData', JSON.stringify(this.virementForm.value));
   }
 
   onSubmit() {
     this.loading = true;
     if (this.virementForm.valid) {
+      this.saveFormData();
       console.log(this.virementForm.value);
       if(this.virementForm.value.numeroReferenceType === 'NONE') this.virementForm.value.numeroReference = '';
       this.swissBillApiRestService.generatePdf(this.virementForm.value).subscribe(pdfBlob => {

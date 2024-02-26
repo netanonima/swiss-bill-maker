@@ -2,6 +2,8 @@ const express = require('express');
 const puppeteer = require('puppeteer');
 const cors = require('cors');
 const QRCode = require('qrcode');
+const fs = require('fs');
+const https = require('https');
 var countries = require("i18n-iso-countries");
 
 countries.registerLocale(require("i18n-iso-countries/langs/en.json"));
@@ -11,6 +13,12 @@ countries.registerLocale(require("i18n-iso-countries/langs/it.json"));
 
 const app = express();
 const port = 3000;
+
+const sslOptions = {
+  cert: fs.readFileSync(''),
+  ca: fs.readFileSync(''),
+  key: fs.readFileSync(''),
+};
 
 app.use(cors());
 app.use(express.json());
@@ -42,33 +50,13 @@ app.get('/getCountries', (req, res) => {
 app.post('/generate-pdf', async (req, res) => {
   console.log('Received request to generate PDF');
   // console.log(req.body);
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
   const page = await browser.newPage();
 
-  /*
-  {
-    ibanDestinataire: 'CH9300762011623852957',
-    nomDestinataire: 'Jean Dupont',
-    rueDestinataire: 'Rue Exemple',
-    numeroRueDestinataire: '10',
-    codePostalDestinataire: 1000,
-    localiteDestinataire: 'Lausanne',
-    paysDestinataire: 'CH',
-    numeroReference: 123456789012345680000,
-    nomEmetteur: 'Marie Curie',
-    rueEmetteur: 'Rue de la Science',
-    numeroRueEmetteur: '42',
-    codePostalEmetteur: 1015,
-    localiteEmetteur: 'Lausanne',
-    paysEmetteur: 'CH',
-    monnaie: 'CHF',
-    montant: 100.5,
-    additionalInformation: 'Facture du 3 février 2024'
-  }
-  ${req.body.nomDestinataire}
-  */
-
   let ibanDestinataire = req.body.ibanDestinataire;
+  let ibanDestinataireFormatted = '';
   let nomDestinataire = req.body.nomDestinataire;
   let rueDestinataire = req.body.rueDestinataire;
   let numeroRueDestinataire = req.body.numeroRueDestinataire;
@@ -77,6 +65,7 @@ app.post('/generate-pdf', async (req, res) => {
   let paysDestinataire = req.body.paysDestinataire;
   let numeroReferenceType = req.body.numeroReferenceType;
   let numeroReference = req.body.numeroReference;
+  let numeroReferenceFormatted = '';
   let nomEmetteur = req.body.nomEmetteur;
   let rueEmetteur = req.body.rueEmetteur;
   let numeroRueEmetteur = req.body.numeroRueEmetteur;
@@ -93,8 +82,7 @@ app.post('/generate-pdf', async (req, res) => {
     const bigIntRef = BigInt(refForControlNumber);
     let controlNumber = (98n - (bigIntRef % 97n)).toString();
     controlNumber = controlNumber.padStart(2, '0');
-    req.body.numeroReference = 'RF'+controlNumber+req.body.numeroReference;
-    numeroReference = req.body.numeroReference;
+    numeroReference = 'RF'+controlNumber+req.body.numeroReference;
   }else if(numeroReferenceType === 'QRR'){
     function calculateMod10Recursive(referenceNumber) {
       const weights = [0, 9, 4, 6, 8, 2, 7, 1, 3, 5];
@@ -114,14 +102,16 @@ app.post('/generate-pdf', async (req, res) => {
   }
 
   // formatage iban
-  const ibanSansEspaces = req.body.ibanDestinataire.replace(/\s+/g, '');
+  const ibanSansEspaces = ibanDestinataire.replace(/\s+/g, '');
   const ibanSegments = ibanSansEspaces.match(/.{1,4}/g);
-  req.body.ibanDestinataire = ibanSegments.join(' ');
+  ibanDestinataireFormatted = ibanSegments.join(' ');
 
   // formatage numéro de référence
-  const referenceSansEspaces = numeroReference.replace(/\s+/g, '');
-  const referenceSegments = referenceSansEspaces.match(/.{1,5}/g);
-  numeroReference = referenceSegments.join(' ');
+  if(numeroReference !== ''){
+    const referenceSansEspaces = numeroReference.replace(/\s+/g, '');
+    const referenceSegments = referenceSansEspaces.match(/.{1,5}/g);
+    numeroReferenceFormatted = referenceSegments.join(' ');
+  }
 
   // création du qr
   let data = `SPC
@@ -193,22 +183,22 @@ EPD`;
                     <p>
                         <div style="font-size: 6pt; line-height: 9pt;"><strong>Compte / Payable à</strong></div>
                         <div style="font-size: 8pt; line-height: 9pt;">
-                          <div>${req.body.ibanDestinataire}</div>
-                          <div>${req.body.nomDestinataire}</div>
-                          <div>${req.body.rueDestinataire} ${req.body.numeroRueDestinataire}</div>
-                          <div>${req.body.codePostalDestinataire} ${req.body.localiteDestinataire}</div>
+                          <div>${ibanDestinataireFormatted}</div>
+                          <div>${nomDestinataire}</div>
+                          <div>${rueDestinataire} ${numeroRueDestinataire}</div>
+                          <div>${codePostalDestinataire} ${localiteDestinataire}</div>
                         </div>
                     </p>
                     <p>
                       <div style="font-size: 6pt; line-height: 9pt;"><strong>Référence</strong></div>
-                      <div style="font-size: 8pt; line-height: 9pt;">${numeroReference}</div>
+                      <div style="font-size: 8pt; line-height: 9pt;">${numeroReferenceFormatted}</div>
                     </p>
                     <p>
                         <div style="font-size: 6pt; line-height: 9pt;"><strong>Payable par</strong></div>
                         <div style="font-size: 8pt; line-height: 9pt;">
-                          <div>${req.body.nomEmetteur}</div>
-                          <div>${req.body.rueEmetteur} ${req.body.numeroRueEmetteur}</div>
-                          <div>${req.body.codePostalEmetteur} ${req.body.localiteEmetteur}</div>
+                          <div>${nomEmetteur}</div>
+                          <div>${rueEmetteur} ${numeroRueEmetteur}</div>
+                          <div>${codePostalEmetteur} ${localiteEmetteur}</div>
                         </div>
                     </p>
                 </div>
@@ -217,11 +207,11 @@ EPD`;
                     <div style="display: flex;">
                       <div style="width: 83.15px; height: 37.79px;">
                           <div style="font-size: 6pt; line-height: 9pt;"><strong>Monnaie</strong></div>
-                          <div style="font-size: 8pt; line-height: 11pt;">${req.body.monnaie}</div>
+                          <div style="font-size: 8pt; line-height: 11pt;">${monnaie}</div>
                       </div>
                       <div style="width: 113.38px; height: 37.79px">
                           <div style="font-size: 6pt; line-height: 9pt;"><strong>Montant</strong></div>
-                          <div style="font-size: 8pt; line-height: 11pt;">${req.body.montant}</div>
+                          <div style="font-size: 8pt; line-height: 11pt;">${montant}</div>
                       </div>
                     </div>
                 </div>
@@ -265,11 +255,11 @@ EPD`;
                             <div style="display: flex;">
                               <div style="width: 83.15px; height: 37.79px;">
                                   <div style="font-size: 8pt; line-height: 11pt;"><strong>Monnaie</strong></div>
-                                  <div style="font-size: 10pt; line-height: 13pt;">${req.body.monnaie}</div>
+                                  <div style="font-size: 10pt; line-height: 13pt;">${monnaie}</div>
                               </div>
                               <div style="width: 113.38px; height: 37.79px">
                                   <div style="font-size: 8pt; line-height: 11pt;"><strong>Montant</strong></div>
-                                  <div style="font-size: 10pt; line-height: 13pt;">${req.body.montant}</div>
+                                  <div style="font-size: 10pt; line-height: 13pt;">${montant}</div>
                               </div>
                             </div>
                         </div>
@@ -279,30 +269,30 @@ EPD`;
                         <p>
                             <div style="font-size: 8pt; line-height: 11pt;"><strong>Compte /Payable à</strong></div>
                             <div style="font-size: 10pt; line-height: 11pt;">
-                              <div>${req.body.ibanDestinataire}</div>
-                              <div>${req.body.nomDestinataire}</div>
-                              <div>${req.body.rueDestinataire} ${req.body.numeroRueDestinataire}</div>
-                              <div>${req.body.codePostalDestinataire} ${req.body.localiteDestinataire}</div>
+                              <div>${ibanDestinataireFormatted}</div>
+                              <div>${nomDestinataire}</div>
+                              <div>${rueDestinataire} ${numeroRueDestinataire}</div>
+                              <div>${codePostalDestinataire} ${localiteDestinataire}</div>
                             </div>
                         </p>
                         <p>
                           <div style="font-size: 8pt; line-height: 11pt;"><strong>Référence</strong></div>
-                          <div style="font-size: 10pt; line-height: 11pt;">${numeroReference}</div>
+                          <div style="font-size: 10pt; line-height: 11pt;">${numeroReferenceFormatted}</div>
                         </p>`;
-    if(req.body.additionalInformation && req.body.additionalInformation !== ""){
+    if(additionalInformation && additionalInformation !== ""){
       content += `
                         <p>
                           <div style="font-size: 8pt; line-height: 11pt;"><strong>Informations supplémentaires</strong></div>
-                          <div style="font-size: 10pt; line-height: 11pt;">${req.body.additionalInformation}</div>
+                          <div style="font-size: 10pt; line-height: 11pt;">${additionalInformation}</div>
                         </p>`;
     }
     content += `
                         <p>
                             <div style="font-size: 8pt; line-height: 11pt;"><strong>Payable par</strong></div>
                             <div style="font-size: 10pt; line-height: 11pt;">
-                              <div>${req.body.nomEmetteur}</div>
-                              <div>${req.body.rueEmetteur} ${req.body.numeroRueEmetteur}</div>
-                              <div>${req.body.codePostalEmetteur} ${req.body.localiteEmetteur}</div>
+                              <div>${nomEmetteur}</div>
+                              <div>${rueEmetteur} ${numeroRueEmetteur}</div>
+                              <div>${codePostalEmetteur} ${localiteEmetteur}</div>
                             </div>
                         </p>
                     </div>
@@ -335,6 +325,6 @@ EPD`;
   });
 });
 
-app.listen(port, () => {
-  console.log(`PDF Generator app listening at http://localhost:${port}`);
+https.createServer(sslOptions, app).listen(port, () => {
+  console.log('HTTPS Server running on port '+port);
 });
