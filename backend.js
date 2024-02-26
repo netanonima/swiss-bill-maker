@@ -188,11 +188,15 @@ EPD`;
                           <div>${rueDestinataire} ${numeroRueDestinataire}</div>
                           <div>${codePostalDestinataire} ${localiteDestinataire}</div>
                         </div>
-                    </p>
+                    </p>`;
+    if(numeroReference !== ''){
+      content += `
                     <p>
                       <div style="font-size: 6pt; line-height: 9pt;"><strong>Référence</strong></div>
                       <div style="font-size: 8pt; line-height: 9pt;">${numeroReferenceFormatted}</div>
-                    </p>
+                    </p>`;
+    }
+    content += `
                     <p>
                         <div style="font-size: 6pt; line-height: 9pt;"><strong>Payable par</strong></div>
                         <div style="font-size: 8pt; line-height: 9pt;">
@@ -274,11 +278,14 @@ EPD`;
                               <div>${rueDestinataire} ${numeroRueDestinataire}</div>
                               <div>${codePostalDestinataire} ${localiteDestinataire}</div>
                             </div>
-                        </p>
-                        <p>
+                        </p>`;
+    if(numeroReference !== ''){
+      content += `
+                    <p>
                           <div style="font-size: 8pt; line-height: 11pt;"><strong>Référence</strong></div>
                           <div style="font-size: 10pt; line-height: 11pt;">${numeroReferenceFormatted}</div>
                         </p>`;
+    }
     if(additionalInformation && additionalInformation !== ""){
       content += `
                         <p>
