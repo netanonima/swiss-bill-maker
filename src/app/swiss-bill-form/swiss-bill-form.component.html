@@ -63,10 +63,21 @@
       <mat-error *ngIf="virementForm.get('paysDestinataire')?.hasError('required')">Le pays est obligatoire.</mat-error>
     </mat-form-field>
 
+    <!-- Type de référence -->
+    <mat-form-field appearance="fill">
+      <mat-label>Type de numéro de référence</mat-label>
+      <mat-select formControlName="numeroReferenceType">
+        <mat-option value="NONE">Pas de référence</mat-option>
+        <mat-option value="SCOR">SCOR</mat-option>
+        <mat-option value="QRR">QRR</mat-option>
+      </mat-select>
+      <mat-error *ngIf="virementForm.get('monnaie')?.hasError('required')">Le type de numéro de référence est obligatoire.</mat-error>
+    </mat-form-field>
+
     <!-- Numéro de référence -->
     <mat-form-field appearance="fill">
       <mat-label>Numéro de référence</mat-label>
-      <input matInput formControlName="numeroReference">
+      <input matInput formControlName="numeroReference" type="text">
       <mat-error *ngIf="virementForm.get('numeroReference')?.hasError('maxlength')">Le numéro de référence ne peut pas dépasser 21 caractères.</mat-error>
       <mat-error *ngIf="virementForm.get('numeroReference')?.hasError('nonNumeric')">Le numéro de référence doit être numérique.</mat-error>
     </mat-form-field>

@@ -65,19 +65,20 @@ export class SwissBillFormComponent implements OnInit {
     this.virementForm = this.fb.group({
       ibanDestinataire: ['', [Validators.required, ibanValidator()]],
       nomDestinataire: ['', [Validators.required, Validators.maxLength(70)]],
-      rueDestinataire: ['', [Validators.required, Validators.maxLength(70)]],
+      rueDestinataire: ["", [Validators.required, Validators.maxLength(70)]],
       numeroRueDestinataire: ['', [Validators.required, Validators.maxLength(16)]],
       codePostalDestinataire: ['', [Validators.required, Validators.maxLength(16), numericValidator()]],
       localiteDestinataire: ['', [Validators.required, Validators.maxLength(35)]],
-      paysDestinataire: ['CH', Validators.required],
+      paysDestinataire: ['', Validators.required],
+      numeroReferenceType: ['', Validators.required],
       numeroReference: ['', [Validators.minLength(5), Validators.maxLength(21), numericValidator()]],
       nomEmetteur: ['', [Validators.required, Validators.maxLength(70)]],
-      rueEmetteur: ['', [Validators.required, Validators.maxLength(70)]],
+      rueEmetteur: ["", [Validators.required, Validators.maxLength(70)]],
       numeroRueEmetteur: ['', [Validators.required, Validators.maxLength(16)]],
       codePostalEmetteur: ['', [Validators.required, Validators.maxLength(16), numericValidator()]],
       localiteEmetteur: ['', [Validators.required, Validators.maxLength(35)]],
-      paysEmetteur: ['CH', Validators.required],
-      monnaie: ['CHF', Validators.required],
+      paysEmetteur: ['', Validators.required],
+      monnaie: ['', Validators.required],
       montant: ['', [Validators.required, montantValidator()]],
       additionalInformation: ['', Validators.maxLength(140)]
     });
@@ -94,6 +95,7 @@ export class SwissBillFormComponent implements OnInit {
     this.loading = true;
     if (this.virementForm.valid) {
       console.log(this.virementForm.value);
+      if(this.virementForm.value.numeroReferenceType === 'NONE') this.virementForm.value.numeroReference = '';
       this.swissBillApiRestService.generatePdf(this.virementForm.value).subscribe(pdfBlob => {
         this.swissBillDataSharingService.updatePdfData(pdfBlob);
         this.loading = false;

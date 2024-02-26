@@ -1,7 +1,7 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
 const cors = require('cors');
-const QRCodeSVG = require('qrcode-svg');
+const QRCode = require('qrcode');
 var countries = require("i18n-iso-countries");
 
 countries.registerLocale(require("i18n-iso-countries/langs/en.json"));
@@ -75,7 +75,8 @@ app.post('/generate-pdf', async (req, res) => {
   let codePostalDestinataire = req.body.codePostalDestinataire;
   let localiteDestinataire = req.body.localiteDestinataire;
   let paysDestinataire = req.body.paysDestinataire;
-  let numeroReference = req.body.numeroReference.toString();
+  let numeroReferenceType = req.body.numeroReferenceType;
+  let numeroReference = req.body.numeroReference;
   let nomEmetteur = req.body.nomEmetteur;
   let rueEmetteur = req.body.rueEmetteur;
   let numeroRueEmetteur = req.body.numeroRueEmetteur;
@@ -87,12 +88,30 @@ app.post('/generate-pdf', async (req, res) => {
   let additionalInformation = req.body.additionalInformation;
 
   // traitement numéro de référence selon norme iso 11649
-  const refForControlNumber = req.body.numeroReference+'271500';
-  const bigIntRef = BigInt(refForControlNumber);
-  let controlNumber = (98n - (bigIntRef % 97n)).toString();
-  controlNumber = controlNumber.padStart(2, '0');
-  req.body.numeroReference = 'RF'+controlNumber+req.body.numeroReference;
-  numeroReference = req.body.numeroReference;
+  if(numeroReferenceType === 'SCOR'){
+    const refForControlNumber = numeroReference+'271500';
+    const bigIntRef = BigInt(refForControlNumber);
+    let controlNumber = (98n - (bigIntRef % 97n)).toString();
+    controlNumber = controlNumber.padStart(2, '0');
+    req.body.numeroReference = 'RF'+controlNumber+req.body.numeroReference;
+    numeroReference = req.body.numeroReference;
+  }else if(numeroReferenceType === 'QRR'){
+    function calculateMod10Recursive(referenceNumber) {
+      const weights = [0, 9, 4, 6, 8, 2, 7, 1, 3, 5];
+      let carry = 0; // Report initial
+      for (let i = 0; i < referenceNumber.length - 1; i++) {
+        const num = parseInt(referenceNumber.charAt(i), 10);
+        carry = weights[(num + carry) % 10];
+      }
+      const controlDigit = (10 - carry) % 10;
+      return controlDigit;
+    }
+    numeroReference = numeroReference+calculateMod10Recursive(numeroReference+'P').toString();
+    numeroReference = numeroReference.padStart(27, '0');
+  }else{
+    numeroReferenceType = 'NON';
+    numeroReference = '';
+  }
 
   // formatage iban
   const ibanSansEspaces = req.body.ibanDestinataire.replace(/\s+/g, '');
@@ -100,13 +119,12 @@ app.post('/generate-pdf', async (req, res) => {
   req.body.ibanDestinataire = ibanSegments.join(' ');
 
   // formatage numéro de référence
-  const referenceSansEspaces = req.body.numeroReference.replace(/\s+/g, '');
+  const referenceSansEspaces = numeroReference.replace(/\s+/g, '');
   const referenceSegments = referenceSansEspaces.match(/.{1,5}/g);
-  req.body.numeroReference = referenceSegments.join(' ');
+  numeroReference = referenceSegments.join(' ');
 
   // création du qr
-  let data = `
-SPC
+  let data = `SPC
 0200
 1
 ${ibanSansEspaces}
@@ -133,13 +151,10 @@ ${numeroRueEmetteur}
 ${codePostalEmetteur}
 ${localiteEmetteur}
 ${paysEmetteur}
-SCOR
+${numeroReferenceType}
 ${numeroReference}
 ${additionalInformation}
-EPD
-
-
-  `;
+EPD`;
   const numberOfLineBreaks = (data.match(/\n/g) || []).length;
   const maxDataLength = 997 - numberOfLineBreaks;
   if (data.length > maxDataLength) {
@@ -149,19 +164,19 @@ EPD
     data = data.slice(0, -1);
   }
 
-  const qrcode = new QRCodeSVG({
-    content: data,
-    padding: 0,
+  QRCode.toDataURL(data, {
+    qversion: 25,
+    error: 'M',
     width: 46,
-    height: 46,
-    container: "svg-viewbox",
-    join: true,
-    color: "#000000",
-    background: "#ffffff"
-  });
-  const svgString = qrcode.svg();
+    margin: 0,
+    color: {
+      dark:"#000000",
+      light:"#ffffff"
+    }
+  }, async function (err, QRCodeURL) {
+    if (err) throw err;
 
-  let content = `
+    let content = `
     <body style="font-family: 'Arial', sans-serif; height: 100%; margin: 0; display: grid; align-content: end;">
         <div style="position: relative; left: 0px; top: -1px;">
             <div style="position: relative; width: 793.7px; height: 396.85px; border-top: dashed 1px black; display: flex;">
@@ -186,7 +201,7 @@ EPD
                     </p>
                     <p>
                       <div style="font-size: 6pt; line-height: 9pt;"><strong>Référence</strong></div>
-                      <div style="font-size: 8pt; line-height: 9pt;">${req.body.numeroReference}</div>
+                      <div style="font-size: 8pt; line-height: 9pt;">${numeroReference}</div>
                     </p>
                     <p>
                         <div style="font-size: 6pt; line-height: 9pt;"><strong>Payable par</strong></div>
@@ -228,8 +243,8 @@ EPD
                         <div style="width: 192.75px; height: 211.65px; padding-top: 18.9px; padding-right: 18.9px; padding-bottom: 18.9px;">
                             <!-- Swiss QR Code section -->
                             <div style="position: relative; width: 173.85px; height: 173.85px; position: relative; display: flex; justify-content: center; align-items: center;">
-                              <div style="width: 100%; height: auto;">
-                                  ${svgString}
+                              <div style="width: 173.85px; height: 173.85px; display: flex; justify-content: center; align-items: center;">
+                                <img src="${QRCodeURL}" style="max-width: 100%; max-height: 100%;" />
                               </div>
                               <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                                   <svg width="7mm" height="7mm" version="1.1" id="Ebene_2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 19.8 19.8" style="enable-background:new 0 0 19.8 19.8;" xml:space="preserve">
@@ -272,16 +287,16 @@ EPD
                         </p>
                         <p>
                           <div style="font-size: 8pt; line-height: 11pt;"><strong>Référence</strong></div>
-                          <div style="font-size: 10pt; line-height: 11pt;">${req.body.numeroReference}</div>
+                          <div style="font-size: 10pt; line-height: 11pt;">${numeroReference}</div>
                         </p>`;
-  if(req.body.additionalInformation && req.body.additionalInformation !== ""){
-    content += `
+    if(req.body.additionalInformation && req.body.additionalInformation !== ""){
+      content += `
                         <p>
                           <div style="font-size: 8pt; line-height: 11pt;"><strong>Informations supplémentaires</strong></div>
                           <div style="font-size: 10pt; line-height: 11pt;">${req.body.additionalInformation}</div>
                         </p>`;
-  }
-  content += `
+    }
+    content += `
                         <p>
                             <div style="font-size: 8pt; line-height: 11pt;"><strong>Payable par</strong></div>
                             <div style="font-size: 10pt; line-height: 11pt;">
@@ -302,21 +317,22 @@ EPD
     </body>
   `;
 
-  await page.setContent(content);
-  const pdfBuffer = await page.pdf({
-    format: 'A4',
-    margin: {
-      top: '0mm',
-      right: '0mm',
-      bottom: '0mm',
-      left: '0mm',
-    }
+    await page.setContent(content);
+    const pdfBuffer = await page.pdf({
+      format: 'A4',
+      margin: {
+        top: '0mm',
+        right: '0mm',
+        bottom: '0mm',
+        left: '0mm',
+      }
+    });
+    await browser.close();
+
+    res.setHeader('Content-Type', 'application/pdf');
+
+    res.send(pdfBuffer);
   });
-  await browser.close();
-
-  res.setHeader('Content-Type', 'application/pdf');
-
-  res.send(pdfBuffer);
 });
 
 app.listen(port, () => {
